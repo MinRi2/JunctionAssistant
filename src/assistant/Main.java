@@ -1,6 +1,8 @@
 package assistant;
 
+import mindustry.*;
 import mindustry.mod.*;
+import mindustry.mod.Mods.*;
 
 public class Main extends Mod{
     @Override
@@ -8,5 +10,8 @@ public class Main extends Mod{
         super.init();
 
         JunctionAssistant.init();
+
+        LoadedMod mod = Vars.mods.locateMod("junction-assistant");
+        mod.meta.description = mod.root.child("description").readString();
     }
 }
