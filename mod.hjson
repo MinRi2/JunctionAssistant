@@ -11,7 +11,7 @@ author: "minRi2"
 main: "assistant.Main"
 
 #the mod description as seen in the mod dialog
-description: "允许连接器寻路 [accent][2][]在传送带和连接器间替换成廉价的光传器件，可节省资源"
+description: ""
 
 #the mod version
 version: 1.0

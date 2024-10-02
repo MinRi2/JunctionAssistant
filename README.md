@@ -14,7 +14,7 @@
 # English
 
 ## Junction Assistant
-* [accent][1][]Allow diagonal junction.
+* Allow diagonal junction.
 * Replace conveyor and junction with cheaper instant transfer to save some resource.
 <img width="512" src="./.github/images/conveyor.png" alt=""/>
 <img width="512" src="./.github/images/junction.png" alt=""/>
