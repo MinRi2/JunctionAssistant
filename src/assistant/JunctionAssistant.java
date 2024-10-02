@@ -81,7 +81,7 @@ public class JunctionAssistant{
                 // rotate is in priority.
                 if(++instantCount > maxInstantReplacement){
                     lastPlan.block = junction;
-                    instantCount = 0;
+                    instantCount = 1;
                 }
             }else if(instantCount < maxInstantReplacement){
                 plan.block = instantReplacement;
