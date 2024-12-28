@@ -1,6 +1,10 @@
 package assistant;
 
 import arc.*;
+import arc.KeyBinds.*;
+import arc.input.*;
+import arc.input.InputDevice.*;
+import arc.math.geom.*;
 import arc.struct.*;
 import arc.util.*;
 import mindustry.*;
@@ -18,8 +22,6 @@ import mindustry.world.blocks.distribution.*;
  * Create by 2024/10/2
  */
 public class JunctionAssistant{
-    private static int lastX, lastY;
-
     private static final int maxInstantReplacement = 2;
 
     private static final Block rotateReplacement = Blocks.sorter,
@@ -30,25 +32,22 @@ public class JunctionAssistant{
         Events.run(Trigger.preDraw, () -> {
             if(!Core.settings.getBool("junction-assistant")) return;
 
-            if(!Vars.mobile && (!Core.input.keyDown(Binding.select) || Core.scene.hasMouse())) return;
+            if(!Vars.mobile && !Core.input.keyDown(Binding.select)) return;
 
             InputHandler input = Vars.control.input;
-            if(input.block == null) return;
+            Block block = input.block;
+            if(block == null) return;
 
-            int cursorX = World.toTile(Core.input.mouseWorldX());
-            int cursorY = World.toTile(Core.input.mouseWorldY());
-
-            if(lastX != cursorX || lastY != cursorY){
-                lastX = cursorX;
-                lastY = cursorY;
-
-                if(input.block instanceof Junction junction){
-                    updateJunctionLine(junction, input.linePlans);
-                }else if(input.block instanceof Conveyor conveyor){
-                    updateConveyorLine(conveyor, input.linePlans);
-                }
+            if(block instanceof Junction junction){
+                updateJunctionLine(junction, input.linePlans);
+            }else if(block instanceof Conveyor conveyor){
+                updateConveyorLine(conveyor, input.linePlans);
             }
         });
+
+        if(!Vars.mobile){
+            registerKeyBind();
+        }
 
         for(Block block : Vars.content.blocks()){
             if(block instanceof Junction junction && junction.size == 1){
@@ -58,6 +57,16 @@ public class JunctionAssistant{
         }
 
         Vars.ui.settings.game.checkPref("junction-assistant", true);
+    }
+
+    private static void registerKeyBind(){
+        Events.run(Trigger.update, () -> {
+            if(Core.input.ctrl() && Core.input.keyRelease(KeyCode.j)){
+                boolean toggled = !Core.settings.getBool("junction-assistant");
+                Core.settings.put("junction-assistant", toggled);
+                Vars.ui.showInfoFade("@junction-assistant." + (toggled ? "enabled" : "disabled"), 2);
+            }
+        });
     }
 
     private static void updateJunctionLine(Junction junction, Seq<BuildPlan> plans){
@@ -133,6 +142,12 @@ public class JunctionAssistant{
         int lastRotation = plans.first().rotation;
         for(int i = 1; i < plans.size; i++){
             BuildPlan plan = plans.get(i);
+
+            // skip bridge replacement.
+            if(plan.block == conveyor.bridgeReplacement){
+                instantCount = 0;
+                continue;
+            }
 
             if(lastRotation == plan.rotation && instantCount < maxInstantReplacement){
                 plan.block = instantReplacement;
